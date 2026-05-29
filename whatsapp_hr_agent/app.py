@@ -21,6 +21,15 @@ import os
 
 from flask import Flask, request
 
+# Carga automática del archivo .env (si python-dotenv está instalado).
+# Así no hay que exportar variables a mano en Windows/PowerShell.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:  # pragma: no cover - opcional
+    pass
+
 from hr_agent import responder
 from hr_agent.whatsapp import enviar_mensaje, extraer_mensaje, verificar_webhook
 

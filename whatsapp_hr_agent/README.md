@@ -85,22 +85,63 @@ bajo) y, si decides usar IA generativa, el costo del modelo.
 
 ---
 
-## 4. Escalar a producción (WhatsApp Cloud API)
+## 4. Conectar a WhatsApp real (WhatsApp Cloud API)
 
-1. Crea una app en <https://developers.facebook.com> y agrega el producto
-   **WhatsApp**. Obtendrás un *phone number id* y un *access token*.
-2. Copia `.env.example` a `.env` y complétalo.
-3. Instala dependencias y levanta el webhook:
-   ```bash
-   pip install -r requirements.txt
+### Paso 0 — Crear la app en Meta (gratis)
+
+1. Entra a <https://developers.facebook.com> con tu cuenta de Facebook.
+2. **My Apps → Create App → tipo "Business"**.
+3. Agrega el producto **WhatsApp**. Meta te dará automáticamente:
+   - Un **número de prueba** gratuito.
+   - Un **Phone number ID**.
+   - Un **Access token** temporal (24 h, suficiente para una demo).
+4. En *API Setup*, agrega tu propio celular como **destinatario de prueba**
+   (recipient). Con el número de prueba solo puedes escribir a números que
+   verifiques ahí (hasta 5).
+
+### Paso 1 — Configurar el proyecto
+
+```powershell
+pip install -r requirements.txt
+copy .env.example .env       # en Windows (en Mac/Linux: cp .env.example .env)
+```
+
+Edita `.env` con tus datos:
+- `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_ACCESS_TOKEN` del panel de Meta.
+- `WHATSAPP_VERIFY_TOKEN`: una palabra secreta que tú inventas.
+
+### Paso 2 — Prueba rápida de ENVÍO (demuestra la conexión en minutos)
+
+Sin webhook ni túnel, comprueba que ya puedes enviar por WhatsApp:
+
+```powershell
+python enviar_prueba.py 573001112233
+```
+
+(usa tu número en formato internacional, solo dígitos). Si te llega el mensaje
+por WhatsApp, la integración funciona. ✅
+
+### Paso 3 — Auto-respuesta (el agente contesta solo)
+
+1. Levanta el webhook:
+   ```powershell
    python app.py
    ```
-4. Expón el puerto con un túnel (p. ej. `ngrok http 5000`) o despliégalo en un
-   servidor con HTTPS.
-5. En el panel de Meta, registra la URL `https://TU-DOMINIO/webhook` y el
-   `WHATSAPP_VERIFY_TOKEN` que definiste. Suscríbete al evento `messages`.
-6. ¡Listo! Los mensajes entrantes se responderán automáticamente con el mismo
-   motor que ya probaste en el demo.
+2. En otra terminal, expón el puerto 5000 a internet con un túnel HTTPS:
+   ```powershell
+   ngrok http 5000
+   ```
+   Copia la URL `https://....ngrok-free.app` que te da ngrok.
+3. En el panel de Meta (**WhatsApp → Configuration → Webhook**):
+   - **Callback URL**: `https://....ngrok-free.app/webhook`
+   - **Verify token**: el mismo `WHATSAPP_VERIFY_TOKEN` de tu `.env`.
+   - Pulsa **Verify and save** y **suscríbete al campo `messages`**.
+4. Desde tu celular, escribe un WhatsApp al número de prueba. El agente
+   responderá automáticamente con el mismo motor del demo. 🎉
+
+> Nota: ngrok se descarga gratis en <https://ngrok.com/download>. La URL del
+> túnel cambia cada vez que lo reinicias; si eso pasa, actualiza la Callback URL
+> en Meta.
 
 ### Ruta opcional: respuestas con IA generativa
 
