@@ -1,0 +1,9 @@
+# Dependencias del agente de RR.HH. para WhatsApp.
+#
+# NOTA: el demo local (demo.py) y las pruebas (tests/) NO requieren ninguna
+# de estas dependencias: solo usan la librería estándar de Python. Estas
+# dependencias son necesarias únicamente para levantar el webhook (app.py)
+# que se conecta a la WhatsApp Cloud API al escalar a producción.
+
+flask>=3.0
+requests>=2.31
