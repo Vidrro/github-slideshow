@@ -212,12 +212,12 @@ class DixonColesModel:
 
     # ---- persistence ------------------------------------------------------
     def save(self, path: str = C.PARAMS_JSON):
-        with open(path, "w") as fh:
+        with open(path, "w", encoding="utf-8") as fh:
             json.dump(self.params, fh, indent=2)
 
     @classmethod
     def load(cls, path: str = C.PARAMS_JSON) -> "DixonColesModel":
-        with open(path) as fh:
+        with open(path, encoding="utf-8") as fh:
             p = json.load(fh)
         m = cls(p["teams"])
         m.params = p

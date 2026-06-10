@@ -32,9 +32,13 @@ A Streamlit dashboard visualises the forecasts and updates as the tournament
 progresses:
 
 ```bash
-python run_all.py          # produce the model + outputs at least once
-streamlit run dashboard.py
+python run_all.py                    # produce the model + outputs at least once
+python -m streamlit run dashboard.py
 ```
+
+(The `python -m streamlit` form works even when the `streamlit` script is not
+on PATH — a common situation on Windows/PowerShell. The commands are identical
+in PowerShell, cmd and bash.)
 
 Two views:
 

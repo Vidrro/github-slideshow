@@ -16,7 +16,7 @@ Run locally:
 
     pip install -r requirements.txt
     python run_all.py            # produce model + outputs at least once
-    streamlit run dashboard.py
+    python -m streamlit run dashboard.py
 """
 from __future__ import annotations
 
@@ -191,7 +191,6 @@ def main():
                  "```bash\npython run_all.py\n```")
         st.stop()
 
-    mt = _mtime(SIM_CSV) + _mtime(PRED_CSV) + _mtime(C.PARAMS_JSON)
     sim = load_simulation(_mtime(SIM_CSV))
     preds = load_group_predictions(_mtime(PRED_CSV))
     fixtures = load_fixtures(_mtime(C.FIXTURES_CSV))

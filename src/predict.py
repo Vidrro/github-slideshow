@@ -229,7 +229,6 @@ def simulate_tournament(model: DixonColesModel,
         bracket = [q_sorted[o] for o in order]  # length 32
 
         round_teams = bracket
-        round_no = 0  # 32->16->8(reach? ) ; final-4 after QF
         while len(round_teams) > 1:
             nxt = []
             for i in range(0, len(round_teams), 2):
@@ -237,7 +236,6 @@ def simulate_tournament(model: DixonColesModel,
                 w = cache.winner(a, b, rng.random(), rng.random())
                 nxt.append(tidx[w])
             round_teams = nxt
-            round_no += 1
             if len(round_teams) == 4:   # semifinalists determined
                 for t in round_teams:
                     semis[t] += 1
@@ -343,7 +341,7 @@ def _write_markdown(preds: pd.DataFrame, sim: pd.DataFrame):
                      f"{r['p_draw']:.0%} / {r['p_away_win']:.0%} |")
     lines.append("")
 
-    with open(f"{C.OUTPUTS_DIR}/predictions.md", "w") as fh:
+    with open(f"{C.OUTPUTS_DIR}/predictions.md", "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
 
 

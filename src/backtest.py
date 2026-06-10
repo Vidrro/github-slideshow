@@ -209,7 +209,7 @@ def _write_markdown(df: pd.DataFrame):
     lines.append("")
     lines.append("_A market-odds benchmark is computed automatically when a "
                  "`data/raw/odds.csv` export (the-odds-api format) is present._")
-    with open(f"{C.OUTPUTS_DIR}/backtest.md", "w") as fh:
+    with open(f"{C.OUTPUTS_DIR}/backtest.md", "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
 
 
