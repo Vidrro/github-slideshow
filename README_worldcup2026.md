@@ -26,6 +26,28 @@ During the tournament, run the daily refresh:
 python update.py           # re-ingest results, refit, regenerate pending forecasts
 ```
 
+## Interactive dashboard
+
+A Streamlit dashboard visualises the forecasts and updates as the tournament
+progresses:
+
+```bash
+python run_all.py          # produce the model + outputs at least once
+streamlit run dashboard.py
+```
+
+Two views:
+
+- **Carrera por el título** — Monte Carlo probabilities (advance / semifinal /
+  champion) per nation, as sortable bar charts and a full table.
+- **Predicción por partido** — pick any fixture to see the most likely score,
+  the top-3 scorelines, P(win/draw/loss), and the full score-probability
+  heatmap. Played matches show the real result alongside the forecast.
+
+The sidebar tracks group-stage progress (matches played) and offers a reload
+button. After running `python update.py` each day, reload the page to see the
+refreshed numbers — the cache is keyed on the output files' modification time.
+
 ## The model
 
 For a match between home team *i* and away team *j*:

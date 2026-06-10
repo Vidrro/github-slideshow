@@ -5,3 +5,5 @@ statsmodels>=0.14
 requests>=2.28
 beautifulsoup4>=4.11
 kaggle>=1.5
+streamlit>=1.30
+plotly>=5.18
