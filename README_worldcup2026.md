@@ -11,6 +11,39 @@ pip install -r requirements.txt
 python run_all.py          # ingest → features → model → predict → backtest
 ```
 
+### Windows / PowerShell (un solo paso)
+
+Si el proyecto aún no está en tu PC, primero clónalo y entra a la carpeta:
+
+```powershell
+cd D:\Downloads\ClaudeCodeTest
+git clone --branch claude/world-cup-2026-predictions-95bmpj https://github.com/Vidrro/github-slideshow.git
+cd github-slideshow
+```
+
+Luego ejecuta el script de arranque. Crea un entorno aislado (`.venv`), instala
+las dependencias, corre la pipeline y abre el dashboard — y **siempre se ejecuta
+desde la carpeta correcta**, así que no verás errores de "No such file":
+
+```powershell
+.\setup.ps1
+```
+
+Si PowerShell bloquea el script por la política de ejecución:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+Scripts auxiliares (también a prueba de la carpeta de trabajo):
+
+| Script | Qué hace |
+|---|---|
+| `.\setup.ps1` | Instala todo, corre la pipeline y lanza el dashboard (primera vez) |
+| `.\dashboard.ps1` | Solo abre el dashboard |
+| `.\update.ps1` | Actualización diaria: reingiere resultados y regenera predicciones |
+
+
 Outputs land in `outputs/`:
 
 | File | Contents |
