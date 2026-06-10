@@ -2,3 +2,12 @@ _site/
 .sass-cache/
 .jekyll-metadata
 .bundle
+
+# WC2026 predictor: raw data is large and re-downloadable; processed data is
+# derived. The committed deliverables live in outputs/.
+data/raw/*.csv
+data/processed/*.csv
+data/processed/*.json
+__pycache__/
+*.pyc
+.venv/
