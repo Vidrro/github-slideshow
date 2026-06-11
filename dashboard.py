@@ -69,9 +69,63 @@ def artefacts_present() -> bool:
                (SIM_CSV, PRED_CSV, C.PARAMS_JSON, C.FIXTURES_CSV))
 
 
+@st.cache_resource(show_spinner=False)
+def ensure_artefacts() -> bool:
+    """Build the model + outputs if they are missing.
+
+    Lets the app run on a fresh deployment (e.g. Streamlit Community Cloud)
+    where the git-ignored data/model artefacts don't exist yet: it downloads
+    the data, fits the model and generates predictions once per container.
+    """
+    if artefacts_present():
+        return True
+    from src import ingest, features, model as model_mod, predict
+    with st.spinner("Preparando el modelo por primera vez "
+                    "(descarga de datos, estimación y simulación, ~1 min)…"):
+        if ingest.run() != 0:
+            return False
+        features.run()
+        model_mod.run()
+        predict.run()
+    return artefacts_present()
+
+
 # --------------------------------------------------------------------------
 # Views
 # --------------------------------------------------------------------------
+def view_upcoming(preds: pd.DataFrame, fixtures: pd.DataFrame):
+    st.subheader("📅 Próximos partidos")
+    st.caption("Partidos de fase de grupos aún por jugarse, con sus marcadores "
+               "más probables. Conforme se jueguen, salen de la lista.")
+
+    # Mark which fixtures are already played and order by date.
+    played = (fixtures[["home_team", "away_team", "home_score"]]
+              .rename(columns={"home_team": "home", "away_team": "away"}))
+    merged = preds.merge(played, on=["home", "away"], how="left")
+    merged["date"] = pd.to_datetime(merged["date"])
+    upcoming = (merged[merged["home_score"].isna()]
+                .sort_values("date").reset_index(drop=True))
+
+    if upcoming.empty:
+        st.success("¡Todos los partidos de grupos ya se jugaron! "
+                   "Revisa la carrera por el título.")
+        return
+
+    n = st.slider("¿Cuántos partidos mostrar?", 2,
+                  int(min(20, len(upcoming))), int(min(6, len(upcoming))))
+
+    for r in upcoming.head(n).itertuples():
+        st.markdown(f"**{r.date.date()}** · Grupo {r.group}")
+        head, c1, c2, c3 = st.columns([3, 1, 1, 1])
+        head.markdown(f"### {r.home} vs {r.away}")
+        head.markdown(f"Marcador más probable: **{r.most_likely}**")
+        c1.metric(f"Gana {r.home}", f"{r.p_home_win:.0%}")
+        c2.metric("Empate", f"{r.p_draw:.0%}")
+        c3.metric(f"Gana {r.away}", f"{r.p_away_win:.0%}")
+        st.markdown(f"Marcadores posibles → **{r.top1}** · {r.top2} · {r.top3}")
+        st.divider()
+
+
 def view_title_race(sim: pd.DataFrame):
     st.subheader("🏆 Carrera por el título")
     st.caption("Probabilidades estimadas por simulación Monte Carlo "
@@ -186,9 +240,10 @@ def main():
                        page_icon="⚽", layout="wide")
     st.title("⚽ Mundial 2026 — Predicciones Dixon-Coles")
 
-    if not artefacts_present():
-        st.error("Faltan artefactos del modelo. Ejecuta primero:\n\n"
-                 "```bash\npython run_all.py\n```")
+    if not ensure_artefacts():
+        st.error("No se pudieron generar los artefactos del modelo "
+                 "(¿sin acceso a internet para descargar los datos?). "
+                 "Ejecuta localmente `python run_all.py` y recarga.")
         st.stop()
 
     sim = load_simulation(_mtime(SIM_CSV))
@@ -211,7 +266,11 @@ def main():
             st.cache_resource.clear()
             st.rerun()
 
-    tab1, tab2 = st.tabs(["🏆 Carrera por el título", "⚽ Predicción por partido"])
+    tab0, tab1, tab2 = st.tabs(["📅 Próximos partidos",
+                                "🏆 Carrera por el título",
+                                "⚽ Predicción por partido"])
+    with tab0:
+        view_upcoming(preds, fixtures)
     with tab1:
         view_title_race(sim)
     with tab2:

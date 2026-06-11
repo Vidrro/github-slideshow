@@ -73,13 +73,38 @@ python -m streamlit run dashboard.py
 on PATH — a common situation on Windows/PowerShell. The commands are identical
 in PowerShell, cmd and bash.)
 
-Two views:
+Three views:
 
+- **Próximos partidos** — the upcoming group-stage fixtures with their most
+  likely scoreline, possible scores (top-3) and P(win/draw/loss). Matches drop
+  off the list as they are played.
 - **Carrera por el título** — Monte Carlo probabilities (advance / semifinal /
   champion) per nation, as sortable bar charts and a full table.
 - **Predicción por partido** — pick any fixture to see the most likely score,
   the top-3 scorelines, P(win/draw/loss), and the full score-probability
   heatmap. Played matches show the real result alongside the forecast.
+
+### Public deployment (open from any PC)
+
+The app self-bootstraps: on a fresh host with no model artefacts it downloads
+the data, fits the model and generates predictions on first load. That makes it
+deployable to **Streamlit Community Cloud** (free, always-on public URL) in a
+few clicks:
+
+1. Sign in at <https://share.streamlit.io> with the GitHub account that owns
+   this repo.
+2. **Create app → Deploy a public app from GitHub**.
+3. Repository `Vidrro/github-slideshow`, branch
+   `claude/world-cup-2026-predictions-95bmpj`, main file `dashboard.py`.
+4. **Deploy**. After the first build you get a permanent URL like
+   `https://<tu-app>.streamlit.app`, reachable from any device.
+
+To redeploy daily numbers without local work, run `python update.py` (or
+`.\update.ps1`), commit and push `outputs/`; Streamlit Cloud redeploys on push.
+
+**Instant temporary link** (your PC must stay on): with the dashboard running on
+port 8501, expose it with a tunnel, e.g. `npx localtunnel --port 8501` or
+`cloudflared tunnel --url http://localhost:8501`.
 
 The sidebar tracks group-stage progress (matches played) and offers a reload
 button. After running `python update.py` each day, reload the page to see the

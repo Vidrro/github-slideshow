@@ -3,11 +3,12 @@ _site/
 .jekyll-metadata
 .bundle
 
-# WC2026 predictor: raw data is large and re-downloadable; processed data is
-# derived. The committed deliverables live in outputs/.
+# WC2026 predictor: raw data is large and re-downloadable; the big derived
+# training table is too. The small processed artefacts the dashboard needs
+# (model params, fixtures, groups, Elo snapshot) ARE committed so the public
+# deployment loads instantly and a push controls what it shows.
 data/raw/*.csv
-data/processed/*.csv
-data/processed/*.json
+data/processed/training.csv
 __pycache__/
 *.pyc
 .venv/
